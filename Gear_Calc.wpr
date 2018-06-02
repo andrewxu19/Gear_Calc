@@ -1,0 +1,9 @@
+#!wing
+#!version=6.0
+##################################################################
+# Wing IDE project file                                          #
+##################################################################
+[project attributes]
+proj.file-list = [loc('Class_Gear.py'),
+                  loc('Main.py')]
+proj.file-type = 'shared'
