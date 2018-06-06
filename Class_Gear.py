@@ -4,7 +4,7 @@
 from math import sin,cos,tan,degrees,radians,pow,sqrt,pi,acos,asin,atan
 
 class Helix_Gear(object):
-# should download ISO1122 or DIN3960 for the English terms of all the parameter name
+    # should download ISO1122 or DIN3960 for the English terms of all the parameter name
     
     def __init__(self,mn,z,z_mate,alpha_n,ha_n,c_n,beta,b,xn,xn_mate,i="e",hand="LH",delta_y_n=0):
         # basic parameter of gear, i represents internal or external gear of the gear pair.  	
@@ -22,14 +22,7 @@ class Helix_Gear(object):
         self.xn=xn                    # 法向变位系数 section profile shift coefficient 
         self.xn_mate=xn_mate          # 配对齿轮法向变位系数 section profile shift coefficient of mated gear
         self.delta_y_n=delta_y_n      # 中心距变动系数 modification factor of center distance 
-
-    # Process information
-        self.mat="20MnCr5"          # 齿轮材料 gear material 
-        self.HT="Carbonitriding"    # 热处理 Heat Treatment 
-        self.hardness="50~56HRC"    # 硬度 hardness of the gear 
         
-    def para_calc(self):
-        # basic parameter calculate
         self.mt=self.mn/cos(self.beta)		        	# 端面模数 face module 
         self.alpha_t=atan(tan(self.alpha_n)/cos(self.beta))	# 端面分度圆压力角 face pressure angle at reference circle  
         self.xt=self.xn*cos(self.beta)                          # 端面变位系数 face profile shift coefficient
@@ -39,21 +32,27 @@ class Helix_Gear(object):
         self.d=self.mt*self.z                        	        # 分度圆直径 reference diameter 
         
         self.db=self.d*cos(self.alpha_t)			# 基圆直径 base circle diameter
-        self.beta_b=atan(self.db*tan(self.beta)/self.d)         # helix angle at base circle        
+        self.beta_b=atan(self.db*tan(self.beta)/self.d)         # helix angle at base circle           
+
+    # Process information
+        self.mat="20MnCr5"          # 齿轮材料 gear material 
+        self.HT="Carbonitriding"    # 热处理 Heat Treatment 
+        self.hardness="50~56HRC"    # 硬度 hardness of the gear 
         
-        if self.i== "e":
+    def para_calc(self):
+        # basic parameter calculate
+       
+        if self.i== "e":    # 外齿 external gear
             self.tip_height=(self.ha+self.xn-self.delta_y_n)*self.mn   # 外齿 齿顶高tip height for external gear
             self.root_height=(self.ha+self.c-self.xn)*self.mn  	# 外齿 齿根高 root height for external gear
             self.da=self.d+2*self.tip_height			# 外齿 齿顶圆直径 tip diameter for external gear 
             self.df=self.d-2*self.root_height			# 外齿 齿根圆直径 root diameter for external gear 
-        elif self.i=="i":
+        else:   # 内齿 internal gear
             self.tip_height=(self.ha-self.xn+self.delta_y_n)*self.mn   # 内齿 齿顶高 tip height for internal gear
             self.root_height=(self.ha+self.c+self.xn)*self.mn  	# 内齿 齿根高 root height for internal gear
             self.da=self.d-2*self.tip_height			# 内齿 齿顶圆直径 tip diameter for internal gear 
             self.df=self.d+2*self.root_height			# 内齿 齿根圆直径 root diameter for internal gear 
-        else:
-            print("gear type not defined")
-        
+       
         self.height=self.tip_height+self.root_height    	# 全齿高full tooth height 
         
         self.alpha_at=acos(self.db/self.da)			# 齿顶圆压力角 tip circle pressure angle 
@@ -113,3 +112,26 @@ def ainv(value):
             return mate
                    
     return 0
+
+class Gear_Pair(object):
+    # gear pair class to store gear pair information, including quality information
+    
+    def __init__(self):
+        self.name=""
+        self.overlap=""
+        self.i=""
+        self.d1_modified=0
+        self.d2_modified=0
+        self.Epix_a=0
+        self.Epix_b=0
+        self.Epix_gama=0
+        self.a=0
+        self.a_modified=0
+        self.at_modified=0
+        self.xn_sigma=0
+        self.yn=0
+        self.yt=0
+        self.delta_y_n=0
+        
+    
+    
