@@ -6,7 +6,7 @@ from math import sin,cos,tan,degrees,radians,pow,sqrt,pi,acos,asin,atan
 class Helix_Gear(object):
 # should download ISO1122 or DIN3960 for the English terms of all the parameter name
     
-    def __init__(self,mn,z,z_mate,i="e",hand="LH",alpha_n,ha_n,c_n,beta,b,xn,xn_mate,delta_y_n=0):
+    def __init__(self,mn,z,z_mate,alpha_n,ha_n,c_n,beta,b,xn,xn_mate,i="e",hand="LH",delta_y_n=0):
         # basic parameter of gear, i represents internal or external gear of the gear pair.  	
         self.mn=mn                    # 法向模数 section gear modules 
         self.z=z                      # 齿数 tooth number 
@@ -27,7 +27,7 @@ class Helix_Gear(object):
         self.mat="20MnCr5"          # 齿轮材料 gear material 
         self.HT="Carbonitriding"    # 热处理 Heat Treatment 
         self.hardness="50~56HRC"    # 硬度 hardness of the gear 
-
+        
     def para_calc(self):
         # basic parameter calculate
         self.mt=self.mn/cos(self.beta)		        	# 端面模数 face module 
@@ -59,13 +59,13 @@ class Helix_Gear(object):
         self.alpha_at=acos(self.db/self.da)			# 齿顶圆压力角 tip circle pressure angle 
         self.beta_a=atan(self.da*tan(self.beta)/self.d)         # 齿顶圆螺旋角，任意圆螺旋角需更換齿顶圆直径参数 helix angle at tip circle, for helix angle at any diameter should replace the parameter self.da
         
-
+        return 0
 
     def advance_calc(self):
     # advanced calculation for parameters not frequently used
         self.tooth_pitch=self.mt*pi                     # 齿距 tooth pitch
         self.st=pi*self.mt/2                            # 分度圆齿厚 tooth thickness at reference circle
-        self.st_a=                                      # 齿顶圆齿厚 tooth thickness at tip circle
+        #self.st_a=                                      # 齿顶圆齿厚 tooth thickness at tip circle
         
         self.z_v=self.z/(cos(self.beta_b)^2*cos(self.beta)) # equivalent tooth number
 
@@ -90,9 +90,26 @@ class Helix_Gear(object):
         test=0
 
 def inv(alpha):
-    # involute function, alpha should be in radians
+    # 渐开线函数，参数弧度 involute function, alpha should be in radians
     return tan(alpha)-alpha
 
 def ainv(value):
-    # function to calculate the angle in radians
+    # 渐开线反函数，输出弧度 function to calculate the angle corresponding to involute spline, units in radians
+    R1=0
+    R2=radians(90)                      # 直接转换为弧度
+    mate=(R2-R1)*0.6180339887498+R1     # 黄金分割法寻优 
+    THRESHOLD=1E-9                      # 精度阈值
+    
+    while 1:
+        eva1=inv(mate)-value
+    
+        if eva1 > THRESHOLD:
+            R2=mate
+            mate=(R2-R1)*0.389660112502+R1
+        elif eva1<0:
+            R1=mate
+            mate=(R2-R1)*0.6180339887498+R1
+        else:
+            return mate
+                   
     return 0
