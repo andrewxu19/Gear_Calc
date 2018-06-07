@@ -11,7 +11,7 @@ class Helix_Gear(object):
         self.mn=mn                    # 法向模数 section gear modules 
         self.z=z                      # 齿数 tooth number 
         self.z_mate=z_mate            # tooth number of mated gear
-        self.i=i	              # 内齿"i"或外齿"e" internal or external gear 
+        self.i=i	                  # 内齿"i"或外齿"e" internal or external gear 
         self.hand=hand	              # 旋向，LH左旋，RH右旋 helix direction 
         self.alpha_n=radians(alpha_n) # 法向分度圆压力角，转換为弧度 section pressure angle at reference diameter, units in deg 
         self.ha_n=ha_n                # 法向齿顶高系数 tip height coefficient 
@@ -23,16 +23,16 @@ class Helix_Gear(object):
         self.xn_mate=xn_mate          # 配对齿轮法向变位系数 section profile shift coefficient of mated gear
         self.delta_y_n=delta_y_n      # 中心距变动系数 modification factor of center distance 
         
-        self.mt=self.mn/cos(self.beta)		        	# 端面模数 face module 
-        self.alpha_t=atan(tan(self.alpha_n)/cos(self.beta))	# 端面分度圆压力角 face pressure angle at reference circle  
+        self.mt=self.mn/cos(self.beta)		                 	# 端面模数 face module 
+        self.alpha_t=atan(tan(self.alpha_n)/cos(self.beta))	    # 端面分度圆压力角 face pressure angle at reference circle  
         self.xt=self.xn*cos(self.beta)                          # 端面变位系数 face profile shift coefficient
         self.ha_t=self.ha_n*cos(self.beta)                      # 端面齿顶高系数 face tip height coefficient
         self.c_t=self.c_n*cos(self.beta)                        # 端面顶隙系数 face tip gap coefficient
         
         self.d=self.mt*self.z                        	        # 分度圆直径 reference diameter 
         
-        self.db=self.d*cos(self.alpha_t)			# 基圆直径 base circle diameter
-        self.beta_b=atan(self.db*tan(self.beta)/self.d)         # helix angle at base circle           
+        self.db=self.d*cos(self.alpha_t)			            # 基圆直径 base circle diameter
+        self.beta_b=atan(self.db*tan(self.beta)/self.d)         # 基圆螺旋角 helix angle at base circle           
 
     # Process information
         self.mat="20MnCr5"          # 齿轮材料 gear material 
@@ -43,13 +43,13 @@ class Helix_Gear(object):
         # basic parameter calculate
        
         if self.i== "e":    # 外齿 external gear
-            self.tip_height=(self.ha+self.xn-self.delta_y_n)*self.mn   # 外齿 齿顶高tip height for external gear
-            self.root_height=(self.ha+self.c-self.xn)*self.mn  	# 外齿 齿根高 root height for external gear
+            self.tip_height=(self.ha_n+self.xn-self.delta_y_n)*self.mn   # 外齿 齿顶高tip height for external gear
+            self.root_height=(self.ha_n+self.c_n-self.xn)*self.mn  	# 外齿 齿根高 root height for external gear
             self.da=self.d+2*self.tip_height			# 外齿 齿顶圆直径 tip diameter for external gear 
             self.df=self.d-2*self.root_height			# 外齿 齿根圆直径 root diameter for external gear 
         else:   # 内齿 internal gear
-            self.tip_height=(self.ha-self.xn+self.delta_y_n)*self.mn   # 内齿 齿顶高 tip height for internal gear
-            self.root_height=(self.ha+self.c+self.xn)*self.mn  	# 内齿 齿根高 root height for internal gear
+            self.tip_height=(self.ha_n-self.xn+self.delta_y_n)*self.mn   # 内齿 齿顶高 tip height for internal gear
+            self.root_height=(self.ha_n+self.c_n+self.xn)*self.mn  	# 内齿 齿根高 root height for internal gear
             self.da=self.d-2*self.tip_height			# 内齿 齿顶圆直径 tip diameter for internal gear 
             self.df=self.d+2*self.root_height			# 内齿 齿根圆直径 root diameter for internal gear 
        
@@ -66,7 +66,7 @@ class Helix_Gear(object):
         self.st=pi*self.mt/2                            # 分度圆齿厚 tooth thickness at reference circle
         #self.st_a=                                      # 齿顶圆齿厚 tooth thickness at tip circle
         
-        self.z_v=self.z/(cos(self.beta_b)^2*cos(self.beta)) # equivalent tooth number
+        self.z_v=self.z/(cos(self.beta_b)^2*cos(self.beta)) # 当量齿数Zv, equivalent tooth number
 
     def gear_quality_check(self):
     # check the gear quality, eg. undercut, tip sharpen, sliding rate, root pressure ratio
@@ -94,7 +94,7 @@ def inv(alpha):
 
 def ainv(value):
     # 渐开线反函数，输出弧度 function to calculate the angle corresponding to involute spline, units in radians
-    R1=0
+    R1=0                                # 起始角度0deg/rad
     R2=radians(90)                      # 直接转换为弧度
     mate=(R2-R1)*0.6180339887498+R1     # 黄金分割法寻优 
     THRESHOLD=1E-9                      # 精度阈值
@@ -114,7 +114,7 @@ def ainv(value):
     return 0
 
 class Gear_Pair(object):
-    # gear pair class to store gear pair information, including quality information
+    # 齿轮对的参数存放于此类中 gear pair class to store gear pair information, including quality information
     
     def __init__(self):
         self.name=""
@@ -133,5 +133,6 @@ class Gear_Pair(object):
         self.yt=0
         self.delta_y_n=0
         
-    
-    
+# the following are for testing of this file    
+gear=Helix_Gear(2.5,19,31,20,1,0.25,18,30,0,0)
+print(gear.mn,gear.z,gear.beta,gear.d,gear.mat,gear.HT,gear.hardness)
