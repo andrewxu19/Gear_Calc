@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
 
-from math import sin,cos,tan,degrees,radians,pow,sqrt,pi,acos,asin,atan
+from math import sin,cos,tan,degrees,radians,pow,sqrt,pi,acos,asin,atan,sqrt
 
 class Helix_Gear(object):
     # should download ISO1122 or DIN3960 for the English terms of all the parameter name
@@ -11,7 +11,7 @@ class Helix_Gear(object):
         self.mn=mn                    # 法向模数 section gear modules 
         self.z=z                      # 齿数 tooth number 
         self.z_mate=z_mate            # tooth number of mated gear
-        self.i=i	                  # 内齿"i"或外齿"e" internal or external gear 
+        self.i=i	              # 内齿"i"或外齿"e" internal or external gear 
         self.hand=hand	              # 旋向，LH左旋，RH右旋 helix direction 
         self.alpha_n=radians(alpha_n) # 法向分度圆压力角，转換为弧度 section pressure angle at reference diameter, units in deg 
         self.ha_n=ha_n                # 法向齿顶高系数 tip height coefficient 
@@ -86,7 +86,18 @@ class Helix_Gear(object):
 
     def tolerance_calc(self):
     # calculate tolerance of the gear
-        test=0
+    
+        # calculate the common normal length
+        temp=self.z*inv(self.alpha_t)/inv(self.alpha_n)
+        self.k=round(temp/pi*(sqrt((1+2*self.xn/temp)^2-cos(self.alpha_n)^2)/cos(self.alpha_n)-2*self.xn*tan(
+            self.alpha_n)/temp-inv(self.alpha_n))+0.5) # number of teeth when measuring
+        
+        self.w_asterisk=cos(self.alpha_n)*(pi*(self.k-0.5)+temp*inv(self.alpha_n))
+        self.w_delta=2*self.xn*sin(self.alpha_n)
+        
+        self.w_n=(self.w_asterisk+self.w_delta)*self.mn  # common normal length
+        
+        
 
 def inv(alpha):
     # 渐开线函数，参数弧度 involute function, alpha should be in radians

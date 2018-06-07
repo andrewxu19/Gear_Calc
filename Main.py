@@ -2,7 +2,6 @@
 #-*- coding:utf-8 -*-
 
 from Class_Gear import *
-from Optimism import *
 from math import sin,cos,tan,acos
 
 gp=Gear_Pair()  # initializate the gear pair
@@ -16,7 +15,7 @@ mn=L[0]
 z1=L[1]
 z2=L[2]
 
-if z2<z1:   # È·±£z1ÎªÐ¡³ÝÂÖ£¬z2Îª´ó³ÝÂÖ
+if z2<z1:   # È·ï¿½ï¿½z1ÎªÐ¡ï¿½ï¿½ï¿½Ö£ï¿½z2Îªï¿½ï¿½ï¿½ï¿½ï¿½
     print("Z2 should be greater than Z1")
     exit(None)
 
@@ -31,13 +30,13 @@ gp.i=L[10]        # indication of external / internal gear
 hand1=L[11]
 a_modified=L[12]
 
-# ¶ÔºóÐøÊ¹ÓÃµÄ²ÎÊý½øÐÐ³õÊ¼»¯ parameter initialization for following usage
-a=0             # ÖÐÐÄ¾à cender distance
-i1=""           # Ð¡³ÝÂÖÊÇ·ñÎªÍâ³Ý¡¢ÄÚ³Ý£¬"e"ÎªÍâ³Ý£¬"i"ÎªÄÚ³Ý
-i2=""           # ´ó³ÝÂÖÊÇ·ñÎªÍâ³Ý¡¢ÄÚ³Ý£¬"e"ÎªÍâ³Ý£¬"i"ÎªÄÚ³Ý
-at_modified=0   # ÄöºÏ½Ç engagement angle
+# ï¿½Ôºï¿½ï¿½ï¿½Ê¹ï¿½ÃµÄ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½Ê¼ï¿½ï¿½ parameter initialization for following usage
+a=0             # ï¿½ï¿½ï¿½Ä¾ï¿½ cender distance
+i1=""           # Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½Ý¡ï¿½ï¿½Ú³Ý£ï¿½"e"Îªï¿½ï¿½Ý£ï¿½"i"Îªï¿½Ú³ï¿½
+i2=""           # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½Ý¡ï¿½ï¿½Ú³Ý£ï¿½"e"Îªï¿½ï¿½Ý£ï¿½"i"Îªï¿½Ú³ï¿½
+at_modified=0   # ï¿½ï¿½ï¿½Ï½ï¿½ engagement angle
 
-if gp.i=="e":   # ÄÚ¡¢Íâ³Ý£¬ÐýÏòÇø·Ö
+if gp.i=="e":   # ï¿½Ú¡ï¿½ï¿½ï¿½Ý£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     i1="e"
     i2="e"
     if hand1=="LH":
@@ -52,74 +51,56 @@ else:
     else:
         hand2="RH"
 
-g1=Helix_Gear(mn, z1, z2, alpha_n, ha_n, c_n, beta, b, xn1, xn2, i1, hand1)  # Ð¡³ÝÂÖ³õÊ¼»¯
-g2=Helix_Gear(mn, z2, z1, alpha_n, ha_n, c_n, beta, b, xn2, xn1, i2, hand2)  # ´ó³ÝÂÖ³õÊ¼»¯
+g1=Helix_Gear(mn, z1, z2, alpha_n, ha_n, c_n, beta, b, xn1, xn2, i1, hand1)  # Ð¡ï¿½ï¿½ï¿½Ö³ï¿½Ê¼ï¿½ï¿½
+g2=Helix_Gear(mn, z2, z1, alpha_n, ha_n, c_n, beta, b, xn2, xn1, i2, hand2)  # ï¿½ï¿½ï¿½ï¿½Ö³ï¿½Ê¼ï¿½ï¿½
 
-if a_modified==0:    # ÒÑ¾­xn1,xn2£¬Çó±äÎ»ºóÖÐÐÄ¾à xn1,xn2 already known, to calculate a_modified
-    if gp.i=="e":  # ÈçÎªÍâÄöºÏ external engagement
+if a_modified==0:    # ï¿½Ñ¾ï¿½xn1,xn2ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ xn1,xn2 already known, to calculate a_modified
+    if gp.i=="e":  # ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ external engagement
         gp.at_modified=ainv(2*(xn2+xn1)*tan(alpha_n)/(z2+z1)+inv(g1.alpha_t))
         gp.yt=(z2+z1)*(cos(g1.alpha_t)/cos(gp.at_modified)-1)/2
         gp.yn=gp.yt/cos(beta)
         gp.a_modified=mn*((z2+z1)/2+gp.yt)/cos(beta)
-        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn2+xn1-gp.yn   # ÖÐÐÄ¾à±ä¶¯ÏµÊý£¬²¢±£³ÖÍ³Ò»
-    else:   # ÈçÎªÄÚÄöºÏ internal engagement
+        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn2+xn1-gp.yn   # ï¿½ï¿½ï¿½Ä¾ï¿½ä¶¯Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í³Ò»
+    else:   # ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ internal engagement
         gp.at_modified=ainv(2*(xn2-xn1)*tan(alpha_n)/(z2-z1)+inv(g1.alpha_t))
         gp.yt=(z2-z1)*(cos(g1.alpha_t)/cos(gp.at_modified)-1)/2
         gp.yn=gp.yt/cos(beta)
-        gp.a_modified=mn*((z2-z1)/2+gp.yt)/cos(beta)  # ±äÎ»ºóÖÐÐÄ¾à
-        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn2-xn1-gp.yn   # ÖÐÐÄ¾à±ä¶¯ÏµÊý£¬²¢±£³ÖÍ³Ò»     
-else:    # ÒÑÖª±äÎ»ºóÖÐÐÄ¾à£¬Çó±äÎ»ÏµÊý a_modified already known, to calculate xn_sigma
-    gp.a_modified=a_modified    # ±äÎ»ºóÖÐÐÄ¾à´æÈë¶ÔÏó
-    if gp.i=="e":   # ÈçÎªÍâÄöºÏ external engagement
+        gp.a_modified=mn*((z2-z1)/2+gp.yt)/cos(beta)  # ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½
+        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn2-xn1-gp.yn   # ï¿½ï¿½ï¿½Ä¾ï¿½ä¶¯Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í³Ò»     
+else:    # ï¿½ï¿½Öªï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾à£¬ï¿½ï¿½ï¿½Î»Ïµï¿½ï¿½ a_modified already known, to calculate xn_sigma
+    gp.a_modified=a_modified    # ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if gp.i=="e":   # ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ external engagement
         gp.a=mn*(z1+z2)/2/cos(beta)
         gp.yt=(a_modified-a)/g1.mt
         gp.yn=(a_modified-a)/mn
-        gp.at_modified=acos(a*cos(g1.alpha_t)/a_modified) # ÄöºÏ½Ç engagement angle
-        gp.xn_sigma=(z2+z1)*(inv(gp.at_modified)-inv(g1.alpha_t))/2/tan(alpha_n)   # ×Ü±äÎ»ÏµÊý
+        gp.at_modified=acos(a*cos(g1.alpha_t)/a_modified) # ï¿½ï¿½ï¿½Ï½ï¿½ engagement angle
+        gp.xn_sigma=(z2+z1)*(inv(gp.at_modified)-inv(g1.alpha_t))/2/tan(alpha_n)   # ï¿½Ü±ï¿½Î»Ïµï¿½ï¿½
+
+        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=gp.xn_sigma-gp.yn  # ï¿½ï¿½ï¿½Ä¾ï¿½ä¶¯Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í³Ò»
         
-        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=gp.xn_sigma-gp.yn  # ÖÐÐÄ¾à±ä¶¯ÏµÊý£¬²¢±£³ÖÍ³Ò»
-        
-        # ±äÎ»ÏµÊýµÄ·ÖÅä¼°Ð£ºË
-        # ×¢Òâ£¬Ö»ÓÐ·ÖÅäºó£¬²ÅÄÜ½øÐÐµ¥¸ö³ÝÂÖµÄÏêÏ¸¼ÆËã
-        x=x_distribute()
-        
-        g1.xn=g2.xn_mate=x[0]
-        g2.xn=g1.xn_mate=x[1]
-        
-        
-        
-        
-    else:   # ÈçÎªÄÚÄöºÏ internal engagement
+    else:   # ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ internal engagement
         gp.a=mn*(z2-z1)/2/cos(beta)
         gp.yt=(a_modified-a)/g1.mt
         gp.yn=(a_modified-a)/mn
-        gp.at_modified=acos(a*cos(g1.alpha_t)/a_modified) # ÄöºÏ½Ç engagement angle
-        gp.xn_sigma=(z2-z1)*(inv(gp.at_modified)-inv(g1.alpha_t))/2/tan(alpha_n) # ×Ü±äÎ»ÏµÊý
+        gp.at_modified=acos(a*cos(g1.alpha_t)/a_modified) # ï¿½ï¿½ï¿½Ï½ï¿½ engagement angle
+        gp.xn_sigma=(z2-z1)*(inv(gp.at_modified)-inv(g1.alpha_t))/2/tan(alpha_n) # ï¿½Ü±ï¿½Î»Ïµï¿½ï¿½
 
-        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn_sigma-yn  # ÖÐÐÄ¾à±ä¶¯ÏµÊý£¬²¢±£³ÖÍ³Ò»
+        gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn_sigma-yn  # ï¿½ï¿½ï¿½Ä¾ï¿½ä¶¯Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í³Ò»
 
-        # ±äÎ»ÏµÊýµÄ·ÖÅä¼°Ð£ºË
-        # ×¢Òâ£¬Ö»ÓÐ·ÖÅäºó£¬²ÅÄÜ½øÐÐµ¥¸ö³ÝÂÖµÄÏêÏ¸¼ÆËã
-        x=x_distribute()
-        
-        g1.xn=g2.xn_mate=x[0]
-        g2.xn=g1.xn_mate=x[1]  
-        
+g1.para_calc()  # ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½Î»Ïµï¿½ï¿½ï¿½ï¿½ØµÄ³ï¿½ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½Ô²ï¿½ï¿½ï¿½Ý¸ï¿½Ô²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½Î»Ïµï¿½ï¿½ï¿½ï¿½ØµÄ³ï¿½ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½Ô²ï¿½ï¿½ï¿½Ý¸ï¿½Ô²ï¿½ï¿½ calculate other parameters related to delta_y_n of gear1
+g2.para_calc()  # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½Î»Ïµï¿½ï¿½ï¿½ï¿½ØµÄ³ï¿½ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶ï¿½Ô²ï¿½ï¿½ï¿½Ý¸ï¿½Ô²ï¿½ï¿½ calculate other parameters related to delta_y_n of gear2
 
-g1.para_calc()  # ¼ÆËãÐ¡³ÝÂÖÓëÖÐÐÄ¾à±äÎ»ÏµÊýÏà¹ØµÄ³ÝÂÖ²ÎÊý£¬Èç³Ý¶¥Ô²¡¢³Ý¸ùÔ²µÈÓëÖÐÐÄ¾à±äÎ»ÏµÊýÏà¹ØµÄ³ÝÂÖ²ÎÊý£¬Èç³Ý¶¥Ô²¡¢³Ý¸ùÔ²µÈ calculate other parameters related to delta_y_n of gear1
-g2.para_calc()  # ¼ÆËã´ó³ÝÂÖÓëÖÐÐÄ¾à±äÎ»ÏµÊýÏà¹ØµÄ³ÝÂÖ²ÎÊý£¬Èç³Ý¶¥Ô²¡¢³Ý¸ùÔ²µÈ calculate other parameters related to delta_y_n of gear2
+if gp.i=="e":   # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    gp.d1_modified=2*a_modified*z1/(z2+z1) # Ð¡ï¿½ï¿½ï¿½Ö½ï¿½Ô²Ö±ï¿½ï¿½ pitch diameter of gear1
+    gp.d2_modified=2*a_modified*z2/(z2+z1) # ï¿½ï¿½ï¿½ï¿½Ö½ï¿½Ô²Ö±ï¿½ï¿½ pitch diameter of gear2
+    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))+z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi # ï¿½ï¿½ï¿½ï¿½ï¿½ØºÏ¶ï¿½ face overlap ratio
+else:   # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    gp.d1_modified=2*a_modified*z1/(z2-z1) # pitch diameter of gear1
+    gp.d2_modified=2*a_modified*z2/(z2-z1) # pitch diameter of gear2
+    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))-z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi # ï¿½ï¿½ï¿½ï¿½ï¿½ØºÏ¶ï¿½ face overlap ratio  
 
-if gp.i=="e":   # ÍâÄöºÏ
-    gp.d1_modified=2*a_modified*z1/(z2+z1) # Ð¡³ÝÂÖ½ÚÔ²Ö±¾¶ pitch diameter of gear1
-    gp.d2_modified=2*a_modified*z2/(z2+z1) # ´ó³ÝÂÖ½ÚÔ²Ö±¾¶ pitch diameter of gear2
-    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))+z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi # ¶ËÃæÖØºÏ¶È face overlap ratio
-else:   # ÄÚÄöºÏ
-    gp.d1_modified=2*a_modified*z1/(z2-z1) # Ð¡³ÝÂÖ½ÚÔ²Ö±¾¶ pitch diameter of gear1
-    gp.d2_modified=2*a_modified*z2/(z2-z1) # ´ó³ÝÂÖ½ÚÔ²Ö±¾¶ pitch diameter of gear2
-    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))-z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi # ¶ËÃæÖØºÏ¶È face overlap ratio  
+gp.Epix_b=b*sin(beta)/mn/pi    # ï¿½ï¿½ï¿½ï¿½ï¿½ØºÏ¶ï¿½ axial overlap ratio
+gp.Epix_gama=gp.Epix_a+gp.Epix_b     # ï¿½ï¿½ï¿½ØºÏ¶ï¿½ total overlap ratio    
 
-gp.Epix_b=b*sin(beta)/mn/pi    # ÖáÏòÖØºÏ¶È axial overlap ratio
-gp.Epix_gama=gp.Epix_a+gp.Epix_b     # ×ÜÖØºÏ¶È total overlap ratio    
-
-# the following will check the engagement quality
+# the following will check the engagement quality 
 
