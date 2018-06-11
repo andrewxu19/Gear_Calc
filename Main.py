@@ -3,7 +3,7 @@
 
 from Class_Gear import *
 from Optimism import *
-from math import sin,cos,tan,acos
+from math import sin,cos,tan,acos,sqrt
 
 gp=Gear_Pair()  # gear pair initialization
 gp.name=input("please input gear pair number:")
@@ -27,6 +27,11 @@ beta=L[6]
 b=L[7]
 xn1=L[8]
 xn2=L[9]
+
+if xn1<0:
+    print("the modification factor of gear1 should be greater than 0, please change the parameter.")
+    exit(None)
+
 gp.i=L[10]        # indication of external / internal gear
 hand1=L[11]
 a_modified=L[12]
@@ -68,7 +73,7 @@ if a_modified==0:    # if xn1,xn2 already known, to calculate a_modified
         gp.yn=gp.yt/cos(beta)
         gp.a_modified=mn*((z2-z1)/2+gp.yt)/cos(beta)  # center distance modified
         gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn2-xn1-gp.yn   # center distance modification factor     
-else:    # if a_modified (center distance modified) already known, to calculate xn_sigma
+else:    # if a_modified (center distance modified) already known, to calculate xn_sigma and distribute xn between gears
     gp.a_modified=a_modified    # gear pair property assignment
     if gp.i=="e":   # if external engagement
         gp.a=mn*(z1+z2)/2/cos(beta)
@@ -79,7 +84,7 @@ else:    # if a_modified (center distance modified) already known, to calculate 
 
         gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=gp.xn_sigma-gp.yn  # center distance modification factor
 
-        x_distribute(g1,g2,gp)  # xn1, xn2 distribution, the parameter should be a class object
+        x_distribute(g1,g2,gp,index)  # xn1, xn2 distribution, the parameter should be a class object
         
     else:   # if internal engagement
         gp.a=mn*(z2-z1)/2/cos(beta)
@@ -89,23 +94,39 @@ else:    # if a_modified (center distance modified) already known, to calculate 
         gp.xn_sigma=(z2-z1)*(inv(gp.at_modified)-inv(g1.alpha_t))/2/tan(alpha_n) # total modification coefficiency
 
         gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn_sigma-yn  # center distance modification factor
+            
+        x_distribute(g1,g2,gp,index)  # xn1, xn2 distribution, the parameter should be a class object
+       
 
-        x_distribute(g1,g2,gp)  # xn1, xn2 distribution, the parameter should be a class object
+            
+        
 
-g1.para_calc()  # calculate other parameters related to delta_y_n of gear1 (tip / root diameter)
-g2.para_calc()  # calculate other parameters related to delta_y_n of gear2 (tip / root diameter)
+
 
 if gp.i=="e":   # if external engagement
     gp.d1_modified=2*a_modified*z1/(z2+z1) # pitch diameter of gear1
     gp.d2_modified=2*a_modified*z2/(z2+z1) # pitch diameter of gear2
-    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))+z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi # �����غ϶� face overlap ratio
+    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))+z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi    # face overlap ratio
 else:   # if internal engagement
     gp.d1_modified=2*a_modified*z1/(z2-z1) # pitch diameter of gear1
     gp.d2_modified=2*a_modified*z2/(z2-z1) # pitch diameter of gear2
-    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))-z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi # �����غ϶� face overlap ratio  
+    gp.Epix_a=(z1*(tan(g1.alpha_at)-tan(gp.at_modified))-z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi    # face overlap ratio  
 
 gp.Epix_b=b*sin(beta)/mn/pi    # axial overlap ratio
 gp.Epix_gama=gp.Epix_a+gp.Epix_b     # total overlap ratio    
 
-# the following will check the engagement quality 
+# the following will check whether there have interference between tip circle of gear2 and root transit curve of gear1
+if gp.i=="e":
+    gp.rho=g1.mt*(z1*sin(g1.alpha_t)/2-(g1.ha_t-g1.xt)/sin(g1.alpha_t))
+    if g2.da<sqrt(g2.db^2+(2*a_modified*sin(gp.at_modified)+2*gp.rho)^2):
+        gp.transit_curve="interferenced, please check the parameter and reselect the xn1"
+        exit()
+    else:
+        gp.transit_curve="no interference with tip circle of gear2 at transit curve of gear1"
+else:
+    print("test")
+
+
+
+
 

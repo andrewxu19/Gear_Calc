@@ -31,9 +31,15 @@ class Helix_Gear(object):
         
         self.d=self.mt*self.z                        	        # 分度圆直径 reference diameter 
         
-        self.db=self.d*cos(self.alpha_t)			            # 基圆直径 base circle diameter
-        self.beta_b=atan(self.db*tan(self.beta)/self.d)         # 基圆螺旋角 helix angle at base circle           
-
+        self.db=self.d*cos(self.alpha_t)			# 基圆直径 base circle diameter
+        self.beta_b=atan(self.db*tan(self.beta)/self.d)         # 基圆螺旋角 helix angle at base circle   
+        
+        self.x_min=self.ha_n-self.z*sin(self.alpha_n)^2     # minimum modificatin factor for the gear
+        
+        self.undercut=""
+        self.tipcut=""
+        self.sharpen=""
+        
     # Process information
         self.mat="20MnCr5"          # 齿轮材料 gear material 
         self.HT="Carbonitriding"    # 热处理 Heat Treatment 
@@ -69,8 +75,19 @@ class Helix_Gear(object):
         self.z_v=self.z/(cos(self.beta_b)^2*cos(self.beta)) # 当量齿数Zv, equivalent tooth number
 
     def gear_quality_check(self):
-    # check the gear quality, eg. undercut, tip sharpen, sliding rate, root pressure ratio
-        test=0
+        # check the gear quality, eg. undercut, tip sharpen, sliding rate, root pressure ratio
+        
+        # undercut check        
+        z_min=2*self.ha/sin(self.alpha_n)^2
+        if self.z<z_min:
+            self.undercut="too less tooth number, please check and re-enter the parameter"
+        
+        # tip cut check
+        
+        self.tipcut=""
+        # tip sharpen check
+        
+        self.sharpen=""
 
     def bend_strength_calc(self):
     # check the bending strength
@@ -128,22 +145,33 @@ class Gear_Pair(object):
     # 齿轮对的参数存放于此类中 gear pair class to store gear pair information, including quality information
     
     def __init__(self):
-        self.name=""
-        self.overlap=""
-        self.i=""
-        self.d1_modified=0
-        self.d2_modified=0
-        self.Epix_a=0
-        self.Epix_b=0
-        self.Epix_gama=0
-        self.a=0
-        self.a_modified=0
-        self.at_modified=0
-        self.xn_sigma=0
+        self.name=""        # gear pair name
+        self.overlap=""     #
+        self.i=""           # external / internal engagement
+        self.d1_modified=0  # pitch diameter of gear1
+        self.d2_modified=0  # pitch diameter of gear2
+        self.Epix_a=0       # face overlap ratio
+        self.Epix_b=0       # axial overlap ratio
+        self.Epix_gama=0    # total overlap ratio
+        self.a=0            # theoretical center distance
+        self.a_modified=0   # modified center distance (actual center distance) 
+        self.at_modified=0  # engagement angle
+        self.xn_sigma=0 # total modification factor
         self.yn=0
         self.yt=0
         self.delta_y_n=0
+        self.rho=0
+        self.eta1=0     # slip ratio of gear1
+        self.eta2=0     # slip ratio of gear2
         
+        self.transit_curve=""   # store the status of the transit curve of gear1
+        
+    
+    def engage_quality_check(self):
+        
+        return 0
+    
+    
 # the following are for testing of this file    
 gear=Helix_Gear(2.5,19,31,20,1,0.25,18,30,0,0)
 print(gear.mn,gear.z,gear.beta,gear.d,gear.mat,gear.HT,gear.hardness)
