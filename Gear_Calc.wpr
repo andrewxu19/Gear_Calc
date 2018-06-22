@@ -5,6 +5,5 @@
 ##################################################################
 [project attributes]
 proj.file-list = [loc('Class_Gear.py'),
-                  loc('Main.py'),
-                  loc('Optimism.py')]
+                  loc('Main.py')]
 proj.file-type = 'shared'

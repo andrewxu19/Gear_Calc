@@ -84,7 +84,7 @@ else:    # if a_modified (center distance modified) already known, to calculate 
 
         gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=gp.xn_sigma-gp.yn  # center distance modification factor
 
-        x_distribute(g1,g2,gp,index)  # xn1, xn2 distribution, the parameter should be a class object
+        gp.x_distribute(g1,g2,1)  # xn1, xn2 distribution, the parameter should be a class object
         
     else:   # if internal engagement
         gp.a=mn*(z2-z1)/2/cos(beta)
@@ -95,7 +95,7 @@ else:    # if a_modified (center distance modified) already known, to calculate 
 
         gp.delta_y_n=g1.delta_y_n=g2.delta_y_n=xn_sigma-yn  # center distance modification factor
             
-        x_distribute(g1,g2,gp,index)  # xn1, xn2 distribution, the parameter should be a class object
+        gp.x_distribute(g1,g2,1)  # xn1, xn2 distribution, the parameter should be a class object
        
 
             
