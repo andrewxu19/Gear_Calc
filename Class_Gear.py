@@ -6,25 +6,25 @@ from math import sin,cos,tan,degrees,radians,pow,sqrt,pi,acos,asin,atan,sqrt
 class Helix_Gear(object):
     # should download ISO1122 or DIN3960 for the English terms of all the parameter name
     
-    def __init__(self,mn,z,z_mate,alpha_n,ha_n,c_n,beta,b,xn,xn_mate,i="e",hand="LH",delta_y_n=0):
-        # basic parameter of gear, i represents internal or external gear of the gear pair.  	
+    def __init__(self,mn,z,z_mate,alpha_n,ha_n,c_n,beta,b,xn,xn_mate,delta_y_n,i="e",hand="LH",):
+        # basic parameter of gear, i represents internal or external gear of the gear pair. the alpha_n and beta should be in radians 	
         self.mn=mn                    # 法向模数 section gear modules 
         self.z=z                      # 齿数 tooth number 
         self.z_mate=z_mate            # tooth number of mated gear
         self.i=i	              # 内齿"i"或外齿"e" internal or external gear 
         self.hand=hand	              # 旋向，LH左旋，RH右旋 helix direction 
-        self.alpha_n=radians(alpha_n) # 法向分度圆压力角，转換为弧度 section pressure angle at reference diameter, units in deg 
+        self.alpha_n=alpha_n          # 法向分度圆压力角，转換为弧度 section pressure angle at reference diameter, units in deg 
         self.ha_n=ha_n                # 法向齿顶高系数 tip height coefficient 
         self.c_n=c_n                  # 法向顶隙系数 tip gap coefficient 
-        self.beta=radians(beta)       # 螺旋角，转換为弧度 helix angle, units in deg， and has been transformed to radians
+        self.beta=beta                # 螺旋角，转換为弧度 helix angle, units in deg， and has been transformed to radians
         self.rho_fp=0.38              # 齿根过渡圆角系数 root radius coeffient 
         self.b=b                      # 齿宽 gear width 
         self.xn=xn                    # 法向变位系数 section profile shift coefficient 
         self.xn_mate=xn_mate          # 配对齿轮法向变位系数 section profile shift coefficient of mated gear
         self.delta_y_n=delta_y_n      # 中心距变动系数 modification factor of center distance 
         
-        self.mt=self.mn/cos(self.beta)		                 	# 端面模数 face module 
-        self.alpha_t=atan(tan(self.alpha_n)/cos(self.beta))	    # 端面分度圆压力角 face pressure angle at reference circle  
+        self.mt=self.mn/cos(self.beta)		                # 端面模数 face module 
+        self.alpha_t=atan(tan(self.alpha_n)/cos(self.beta))	# 端面分度圆压力角 face pressure angle at reference circle  
         self.xt=self.xn*cos(self.beta)                          # 端面变位系数 face profile shift coefficient
         self.ha_t=self.ha_n*cos(self.beta)                      # 端面齿顶高系数 face tip height coefficient
         self.c_t=self.c_n*cos(self.beta)                        # 端面顶隙系数 face tip gap coefficient
@@ -34,13 +34,13 @@ class Helix_Gear(object):
         self.db=self.d*cos(self.alpha_t)			# 基圆直径 base circle diameter
         self.beta_b=atan(self.db*tan(self.beta)/self.d)         # 基圆螺旋角 helix angle at base circle   
         
-        self.x_min=self.ha_n-self.z*sin(self.alpha_n)^2     # minimum modificatin factor for the gear
+        self.x_min=self.ha_n-self.z*sin(self.alpha_n)**2     # 齿轮最小的修形系数 minimum modificatin factor for the gear
         
-        self.undercut=""
-        self.tipcut=""
-        self.sharpen=""
+        self.undercut=""    # 根切状态 gear root cut status
+        self.sharpen=""     # 齿顶变尖状态 gear tip sharpened status
         
-    # Process information
+        # Process information
+        test=0
         self.mat="20MnCr5"          # 齿轮材料 gear material 
         self.HT="Carbonitriding"    # 热处理 Heat Treatment 
         self.hardness="50~56HRC"    # 硬度 hardness of the gear 
@@ -63,50 +63,50 @@ class Helix_Gear(object):
         
         self.alpha_at=acos(self.db/self.da)			# 齿顶圆压力角 tip circle pressure angle 
         self.beta_a=atan(self.da*tan(self.beta)/self.d)         # 齿顶圆螺旋角，任意圆螺旋角需更換齿顶圆直径参数 helix angle at tip circle, for helix angle at any diameter should replace the parameter self.da
+
+
+        self.tooth_pitch=self.mt*pi    # 齿距 tooth pitch
+        self.st=pi*self.mt/2           # 分度圆齿厚 tooth thickness at reference circle
+        self.sa=self.da*(pi/2/self.z+2*self.xn*tan(self.alpha_n)/self.z+inv(self.alpha_n)-inv(self.alpha_at))   # 齿顶圆齿厚 tooth thickness at tip circle
+        
+        self.z_v=self.z/(cos(self.beta_b)**2*cos(self.beta)) # 当量齿数Zv, equivalent tooth number
         
         return 0
-
-    def advance_calc(self):
-    # advanced calculation for parameters not frequently used
-        self.tooth_pitch=self.mt*pi                     # 齿距 tooth pitch
-        self.st=pi*self.mt/2                            # 分度圆齿厚 tooth thickness at reference circle
-        #self.st_a=                                      # 齿顶圆齿厚 tooth thickness at tip circle
-        
-        self.z_v=self.z/(cos(self.beta_b)^2*cos(self.beta)) # 当量齿数Zv, equivalent tooth number
 
     def gear_quality_check(self):
         # check the gear quality, eg. undercut, tip sharpen, sliding rate, root pressure ratio
         
         # undercut check        
-        z_min=2*self.ha/sin(self.alpha_n)^2
+        z_min=2*self.ha_n/sin(self.alpha_n)**2
         if self.z<z_min:
             self.undercut="too less tooth number, please check and re-enter the parameter"
         
-        # tip cut check
-        
-        self.tipcut=""
         # tip sharpen check
-        
-        self.sharpen=""
+
+        if self.sa<0.4*self.mn:
+            self.sharpen="tip thickness too small (less than 0.4mn)"
 
     def bend_strength_calc(self):
     # check the bending strength
         test=0
+        return 0
 
     def contact_strength_calc(self):
     #check contact strength
         test=0
+        return 0
 
     def pitting_calc(self):
     # check pitting
         test=0
+        return 0
 
     def tolerance_calc(self):
     # calculate tolerance of the gear
     
         # calculate the common normal length
         temp=self.z*inv(self.alpha_t)/inv(self.alpha_n)
-        self.k=round(temp/pi*(sqrt((1+2*self.xn/temp)^2-cos(self.alpha_n)^2)/cos(self.alpha_n)-2*self.xn*tan(
+        self.k=round(temp/pi*(sqrt((1+2*self.xn/temp)**2-cos(self.alpha_n)**2)/cos(self.alpha_n)-2*self.xn*tan(
             self.alpha_n)/temp-inv(self.alpha_n))+0.5) # number of teeth when measuring
         
         self.w_asterisk=cos(self.alpha_n)*(pi*(self.k-0.5)+temp*inv(self.alpha_n))
@@ -114,7 +114,8 @@ class Helix_Gear(object):
         
         self.w_n=(self.w_asterisk+self.w_delta)*self.mn  # common normal length
         
-        
+        test=0
+        return 0
 
 def inv(alpha):
     # 渐开线函数，参数弧度 involute function, alpha should be in radians
@@ -146,7 +147,17 @@ class Gear_Pair(object):
     
     def __init__(self):
         self.name=""        # gear pair name
-        self.overlap=""     #
+        self.z1=0           # teeth number of gear1
+        self.z2=0           # teeth number of gear2
+        self.b=0            # gear width
+        self.beta=0         # gear helix angle
+        self.mn=0           # module of gear
+        self.alpha_n=0      # 
+        self.ha_n=0
+        self.c_n=0
+        self.xn1=0
+        self.xn2=0
+        
         self.i=""           # external / internal engagement
         self.d1_modified=0  # pitch diameter of gear1
         self.d2_modified=0  # pitch diameter of gear2
@@ -166,48 +177,92 @@ class Gear_Pair(object):
         
         self.transit_curve=""   # store the status of the transit curve of gear1
         
+    def para_calc(self):
+        # basic parameter calcu
+        self.alpha_t=atan(tan(self.alpha_n)/cos(self.beta))	    # 端面分度圆压力角 face pressure angle at reference circle  
+        self.mt=self.mn/cos(self.beta)		                 	# 端面模数 face module 
+        self.a=self.mn*(self.z1+self.z2)/2/cos(self.beta)           # theoretical center distance
+        
+        if self.a_modified==0:    # if xn1,xn2 already known, to calculate a_modified
+            if self.i=="e":  # if external engagement
+                self.xn_sigma=self.xn2+self.xn1
+                self.at_modified=ainv(2*(self.xn2+self.xn1)*tan(self.alpha_n)/(self.z2+self.z1)+inv(self.alpha_t))
+                self.yt=(self.z2+self.z1)*(cos(self.alpha_t)/cos(self.at_modified)-1)/2
+                self.yn=self.yt/cos(self.beta)
+                self.a_modified=self.mn*((self.z2+self.z1)/2+self.yt)/cos(self.beta)
+                self.delta_y_n=self.xn2+self.xn1-self.yn   # center distance modification factor
+            else:   # if internal engagement
+                self.xn_sigma=self.xn2-self.xn1
+                self.at_modified=ainv(2*(self.xn2-self.xn1)*tan(self.alpha_n)/(self.z2-self.z1)+inv(self.alpha_t))
+                self.yt=(self.z2-self.z1)*(cos(self.alpha_t)/cos(self.at_modified)-1)/2
+                self.yn=self.yt/cos(self.beta)
+                self.a_modified=self.mn*((self.z2-self.z1)/2+self.yt)/cos(self.beta)  # center distance modified
+                self.delta_y_n=self.xn2-self.xn1-self.yn   # center distance modification factor     
+        else:    # if a_modified (center distance modified) already known, to calculate xn_sigma and distribute xn between gears
+            if self.i=="e":   # if external engagement
+                self.a=self.mn*(self.z1+self.z2)/2/cos(self.beta)
+                self.yt=(self.a_modified-self.a)/self.mt
+                self.yn=(self.a_modified-self.a)/self.mn
+                self.at_modified=acos(self.a*cos(self.alpha_t)/self.a_modified) # engagement angle
+                self.xn_sigma=(self.z2+self.z1)*(inv(self.at_modified)-inv(self.alpha_t))/2/tan(self.alpha_n)   # total modification coefficiency
+        
+                self.delta_y_n=self.xn_sigma-self.yn  # center distance modification factor
+               
+            else:   # if internal engagement        
+                self.a=self.mn*(self.z2-self.z1)/2/cos(self.beta)
+                self.yt=(self.a_modified-self.a)/self.mt
+                self.yn=(self.a_modified-self.a)/self.mn
+                self.at_modified=acos(self.a*cos(self.alpha_t)/self.a_modified) # engagement angle
+                self.xn_sigma=(self.z2-self.z1)*(inv(self.at_modified)-inv(self.alpha_t))/2/tan(self.alpha_n) # total modification coefficiency
+        
+                self.delta_y_n=self.xn_sigma-self.yn  # center distance modification factor
+                    
+    def advance_calc(self,g1,g2):
+     
+        if self.i=="e":   # if external engagement
+            self.d1_modified=2*self.a_modified*self.z1/(self.z2+self.z1) # pitch diameter of gear1
+            self.d2_modified=2*self.a_modified*self.z2/(self.z2+self.z1) # pitch diameter of gear2
+            self.Epix_a=(self.z1*(tan(g1.alpha_at)-tan(self.at_modified))+self.z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi    # face overlap ratio
+        else:   # if internal engagement
+            self.d1_modified=2*a_modified*self.z1/(self.z2-self.z1) # pitch diameter of gear1
+            self.d2_modified=2*a_modified*self.z2/(self.z2-self.z1) # pitch diameter of gear2
+            self.Epix_a=(self.z1*(tan(g1.alpha_at)-tan(self.at_modified))-self.z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi    # face overlap ratio  
+        
+        self.Epix_b=self.b*sin(self.beta)/self.mn/pi    # axial overlap ratio
+        self.Epix_gama=self.Epix_a+self.Epix_b     # total overlap ratio    
+        
+        
     def x_distribute(self,g1,g2,index):
             # distribution of xn_sigma, and optimization
-            # g1, g2, gp should be class object
+            # g1, g2, self should be class object
             
         if index==1:    # simplified, to take golden ratio as initialization
             temp=self.xn_sigma
-            new_x_min=g1.x_min
-            a=0
-            b=0
+            if g1.x_min<0:
+                new_x_min=0
+            else:
+                new_x_min=g1.x_min
                     
             while 1:    
                 # what if the check of quality does not meet the criteria, should need re-distribute the modification factor
                 
-                g1.xn=(temp-new_x_min)*0.3819660113+new_x_min
+                g1.xn=(temp-new_x_min)*0.6180339887498+new_x_min
                 
                 if self.i=="e":
-                    g2.xn=temp-g1.xn
+                    g2.xn=self.xn_sigma-g1.xn
                 else:
-                    g2.xn=temp+g1.xn
-                    
+                    g2.xn=self.xn_sigma+g1.xn
+
                 g1.para_calc()  # calculate other parameters related to delta_y_n of gear1 (tip / root diameter)
                 g2.para_calc()  # calculate other parameters related to delta_y_n of gear2 (tip / root diameter)
                 g1.gear_quality_check()
                 g2.gear_quality_check()
-                self.engage_quality_check()
+                self.interference_check(g1,g2)
                         
-                if g1.undercut<>"" or g2.undercut<>"":  # check whether gears have undercut
-                    new_x_min=g1.xn
+                if g1.sharpen!="" or g2.sharpen!="" or self.transit_curve!="":    # check whether gear tip have been sharpened or have transit curve interference
+                    temp=g1.xn
                     continue
-                else:
-                    a=1
-                
-                if g1.sharpen<>"" or g2.sharpen<>"":    # check whether gear tip have been sharpened
-                    temp=new_x_min
-                    new_x_min=g1.xn
-                    continue
-                else:
-                    b=1
-                
-                jump=a+b
-                    
-                if jump==2: # jump=2 means no undercut and no sharpen happened
+                else:   # no undercut, no sharpen and no transit curve interference happened
                     break
                 
         elif index==2:   # equal slip ratio methods
@@ -220,16 +275,26 @@ class Gear_Pair(object):
             return 0
                 
     
-    def engage_quality_check(self):
-        
+    def interference_check(self,g1,g2):
+        if self.i=="i":
+            self.rho=g1.mt*(self.z1*sin(g1.alpha_t)/2-(g1.ha_t-g1.xt)/sin(g1.alpha_t))
+            if g2.da<sqrt(g2.db**2+(2*self.a_modified*sin(self.at_modified)+2*self.rho)**2):
+                self.transit_curve="interferenced, please check the parameter and reselect the xn1"
         return 0
     
-    def slip_ratio(self):
+    def slip_ratio(self,g1,g2):
         # to calculate the slip ratio of the gear pair
-        
+        self.eta1=(self.z1+self.z2)*(tan(g2.alpha_at)-tan(self.at_modified))/((self.z1+self.z2)*tan(self.at_modified)-self.z2*tan(g2.alpha_at))
+        self.eta2=(self.z1+self.z2)*(tan(g1.alpha_at)-tan(self.at_modified))/((self.z1+self.z2)*tan(self.at_modified)-self.z1*tan(g1.alpha_at))
+      
         return 0
     
     
 # the following are for testing of this file    
-gear=Helix_Gear(2.5,19,31,20,1,0.25,18,30,0,0)
-print(gear.mn,gear.z,gear.beta,gear.d,gear.mat,gear.HT,gear.hardness)
+# gear=Helix_Gear(2.5,19,31,20,1,0.25,18,30,0,0)
+# print(gear.mn,gear.z,gear.beta,gear.d,gear.mat,gear.HT,gear.hardness)
+
+def write2file(gp,g1,g2):
+    # write all result to a file with certain format
+    print("test")
+    return 0
