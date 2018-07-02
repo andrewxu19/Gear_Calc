@@ -4,14 +4,17 @@
 
 from Class_Gear import *
 from math import sin,cos,tan,acos,sqrt
-import sys
 
-
-input1=sys.open("") # 从文件读取参数
-test=0
+input1=open("para.txt","r") # 从文件读取参数
+L=input1.readline()
+L=input1.readline()  # the first line is a memo line for user to input para easily
+L.split(",")
+if len(L)<13:
+    print("too less parameters, must be more than 13")
+    exit(0)
 
 # mn,z,z_mate,alpha_n,ha_n,c_n,beta,b,xn,xn_mate,i="e",hand="LH",a_modified=0
-L=[2.5,19,31,20,1,0.25,18,40,0,0,"e","LH",66.4]
+# L=[2.5,19,31,20,1,0.25,18,40,0,0,"e","LH",66.4]
 # L[10],indicate whether external / internal engagement
 
 gp=Gear_Pair()  # gear pair initialization
