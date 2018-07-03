@@ -74,15 +74,15 @@ class Helix_Gear(object):
         return 0
 
     def gear_quality_check(self):
-        # check the gear quality, eg. undercut, tip sharpen, sliding rate, root pressure ratio
+        # 检查齿轮质量，如根切，齿顶变尖
+        # check the gear quality, eg. undercut, tip sharpen
         
-        # undercut check        
+        # 根切检查 undercut check        
         z_min=2*self.ha_n/sin(self.alpha_n)**2
         if self.z<z_min:
             self.undercut="too less tooth number, please check and re-enter the parameter"
         
-        # tip sharpen check
-
+        # 齿顶变尖检查 tip sharpen check
         if self.sa<0.4*self.mn:
             self.sharpen="tip thickness too small (less than 0.4mn)"
 
@@ -102,18 +102,20 @@ class Helix_Gear(object):
         return 0
 
     def tolerance_calc(self):
+    # 计算齿轮的精度公差
     # calculate tolerance of the gear
     
-        # calculate the common normal length
+        # 公法线长度及跨齿数 calculate the common normal length
         temp=self.z*inv(self.alpha_t)/inv(self.alpha_n)
         self.k=round(temp/pi*(sqrt((1+2*self.xn/temp)**2-cos(self.alpha_n)**2)/cos(self.alpha_n)-2*self.xn*tan(
-            self.alpha_n)/temp-inv(self.alpha_n))+0.5) # number of teeth when measuring
+            self.alpha_n)/temp-inv(self.alpha_n))+0.5) # 跨齿数 number of teeth when measuring
         
         self.w_asterisk=cos(self.alpha_n)*(pi*(self.k-0.5)+temp*inv(self.alpha_n))
         self.w_delta=2*self.xn*sin(self.alpha_n)
         
-        self.w_n=(self.w_asterisk+self.w_delta)*self.mn  # common normal length
+        self.w_n=(self.w_asterisk+self.w_delta)*self.mn  # 公法线长度 common normal length
         
+        # 斜齿轮不能测量条件
         test=0
         return 0
 
@@ -152,28 +154,28 @@ class Gear_Pair(object):
         self.b=0            # gear width
         self.beta=0         # gear helix angle
         self.mn=0           # module of gear
-        self.alpha_n=0      # 
-        self.ha_n=0
-        self.c_n=0
-        self.xn1=0
-        self.xn2=0
+        self.alpha_n=0      # 法向压力角
+        self.ha_n=0         # 法向齿顶高系数
+        self.c_n=0          # 法向顶隙系数
+        self.xn1=0          # 小齿轮法向变位系数
+        self.xn2=0          # 大齿轮法向变位系灵敏
         
-        self.i=""           # external / internal engagement
-        self.d1_modified=0  # pitch diameter of gear1
-        self.d2_modified=0  # pitch diameter of gear2
-        self.Epix_a=0       # face overlap ratio
-        self.Epix_b=0       # axial overlap ratio
-        self.Epix_gama=0    # total overlap ratio
-        self.a=0            # theoretical center distance
-        self.a_modified=0   # modified center distance (actual center distance) 
-        self.at_modified=0  # engagement angle
-        self.xn_sigma=0 # total modification factor
-        self.yn=0
+        self.i=""           # 内/外啮合 external / internal engagement
+        self.d1_modified=0  # 小齿轮节圆直径 pitch diameter of gear1
+        self.d2_modified=0  # 大齿轮节圆直径 pitch diameter of gear2
+        self.Epix_a=0       # 端面重合度 face overlap ratio
+        self.Epix_b=0       # 轴向重合度 axial overlap ratio
+        self.Epix_gama=0    # 总重合度 total overlap ratio
+        self.a=0            # 理论中心距 theoretical center distance
+        self.a_modified=0   # 实际中心距 modified center distance (actual center distance) 
+        self.at_modified=0  # 啮合角 engagement angle
+        self.xn_sigma=0 # 总变位系数 total modification factor
+        self.yn=0           # 法向中心距变动系数
         self.yt=0
         self.delta_y_n=0
-        self.rho=0
-        self.eta1=0     # slip ratio of gear1
-        self.eta2=0     # slip ratio of gear2
+        self.rho=0          # 干涉检查用参数
+        self.eta1=0     # 小齿轮最大滑动率 slip ratio of gear1
+        self.eta2=0     # 大齿轮最大滑动率 slip ratio of gear2
         
         self.transit_curve=""   # store the status of the transit curve of gear1
         
@@ -183,7 +185,7 @@ class Gear_Pair(object):
         self.mt=self.mn/cos(self.beta)		                 	# 端面模数 face module 
         self.a=self.mn*(self.z1+self.z2)/2/cos(self.beta)           # theoretical center distance
         
-        if self.a_modified==0:    # if xn1,xn2 already known, to calculate a_modified
+        if self.a_modified==0:    #  变位系数已知，计算实际中心距等参数 if xn1,xn2 already known, to calculate a_modified
             if self.i=="e":  # if external engagement
                 self.xn_sigma=self.xn2+self.xn1
                 self.at_modified=ainv(2*(self.xn2+self.xn1)*tan(self.alpha_n)/(self.z2+self.z1)+inv(self.alpha_t))
@@ -198,7 +200,7 @@ class Gear_Pair(object):
                 self.yn=self.yt/cos(self.beta)
                 self.a_modified=self.mn*((self.z2-self.z1)/2+self.yt)/cos(self.beta)  # center distance modified
                 self.delta_y_n=self.xn2-self.xn1-self.yn   # center distance modification factor     
-        else:    # if a_modified (center distance modified) already known, to calculate xn_sigma and distribute xn between gears
+        else:    # 已知实际中心距，计算总充数位系数 if a_modified (center distance modified) already known, to calculate xn_sigma and distribute xn between gears
             if self.i=="e":   # if external engagement
                 self.a=self.mn*(self.z1+self.z2)/2/cos(self.beta)
                 self.yt=(self.a_modified-self.a)/self.mt
@@ -220,21 +222,22 @@ class Gear_Pair(object):
     def advance_calc(self,g1,g2):
      
         if self.i=="e":   # if external engagement
-            self.d1_modified=2*self.a_modified*self.z1/(self.z2+self.z1) # pitch diameter of gear1
-            self.d2_modified=2*self.a_modified*self.z2/(self.z2+self.z1) # pitch diameter of gear2
+            self.d1_modified=2*self.a_modified*self.z1/(self.z2+self.z1) # 小齿轮节圆直径 pitch diameter of gear1
+            self.d2_modified=2*self.a_modified*self.z2/(self.z2+self.z1) # 大齿轮节圆直径 pitch diameter of gear2
             self.Epix_a=(self.z1*(tan(g1.alpha_at)-tan(self.at_modified))+self.z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi    # face overlap ratio
         else:   # if internal engagement
-            self.d1_modified=2*a_modified*self.z1/(self.z2-self.z1) # pitch diameter of gear1
-            self.d2_modified=2*a_modified*self.z2/(self.z2-self.z1) # pitch diameter of gear2
+            self.d1_modified=2*a_modified*self.z1/(self.z2-self.z1) # 小齿轮节圆直径 pitch diameter of gear1
+            self.d2_modified=2*a_modified*self.z2/(self.z2-self.z1) # 大齿轮节圆直径 pitch diameter of gear2
             self.Epix_a=(self.z1*(tan(g1.alpha_at)-tan(self.at_modified))-self.z2*(tan(g2.alpha_at)-tan(g2.alpha_t)))/2/pi    # face overlap ratio  
         
-        self.Epix_b=self.b*sin(self.beta)/self.mn/pi    # axial overlap ratio
-        self.Epix_gama=self.Epix_a+self.Epix_b     # total overlap ratio    
+        self.Epix_b=self.b*sin(self.beta)/self.mn/pi    # 轴向重合度 axial overlap ratio
+        self.Epix_gama=self.Epix_a+self.Epix_b     # 总重合度 total overlap ratio    
         
         
     def x_distribute(self,g1,g2,index):
-            # distribution of xn_sigma, and optimization
-            # g1, g2, self should be class object
+    # 变位系数分配优化，g1,g2为齿轮类对象，index为方法类别，1为黄金分割法，2为
+    # distribution of xn_sigma, and optimization
+    # g1, g2, self should be class object
             
         if index==1:    # simplified, to take golden ratio as initialization
             temp=self.xn_sigma
@@ -264,7 +267,7 @@ class Gear_Pair(object):
                     continue
                 else:   # no undercut, no sharpen and no transit curve interference happened
                     break
-                
+            return 1    
         elif index==2:   # equal slip ratio methods
             # more complex
             return 2
@@ -295,6 +298,7 @@ class Gear_Pair(object):
 # print(gear.mn,gear.z,gear.beta,gear.d,gear.mat,gear.HT,gear.hardness)
 
 def write2file(gp,g1,g2):
-    # write all result to a file with certain format
+# 计算结果按特定格式输出至文件    
+# write all result to a file with certain format
     print("test")
     return 0
