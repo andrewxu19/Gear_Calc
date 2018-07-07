@@ -6,7 +6,7 @@ from Class_Gear import *
 from math import sin,cos,tan,acos,sqrt
 
 input1=open("para.txt","r") # 从文件读取参数 para from a file
-L=input1.seek(2)    # 从第二行开始读 seed the second line
+L=input1.readline()    # 从第二行开始读 seed the second line
 L=input1.readline()  # the first line is a memo line for user to input para easily
 L=L.split(",")
 if len(L)<13:   # 检测参数是否输全 check whether all paras have been inputed
