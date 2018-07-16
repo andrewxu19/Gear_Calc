@@ -114,9 +114,29 @@ class Helix_Gear(object):
         self.w_delta=2*self.xn*sin(self.alpha_n)
         
         self.w_n=(self.w_asterisk+self.w_delta)*self.mn  # 公法线长度 common normal length
-        
-        # 斜齿轮不能测量条件
-        test=0
+                
+        test=0 # 斜齿轮不能测量条件
+
+        # 分度圆弦齿厚
+        if self.i="e":
+            self.h_bar=self.ha_n+self.mn*self.z_v*(1-cos(pi/2/self.z_v+2*self.xn*tan(self.alpha_n)/self.z_v)) # 分度圆弦齿高
+            self.s_bar=self.mn*self.z_v*sin(pi/2/self.z_v+2*self.xn*tan(self.alpha_n)/self.z_v) # 分度圆弦齿厚
+        else:
+            self.delta_a2= # test 公式模糊，看不清，暂停编辑
+            self.h2_delta=self.da/2*(1-cos(self.delta_a2))
+
+            self.s_bar=self.mn*self.z_v*sin(pi/2/self.z_v-2*self.xn*tan(self.alpha_n)/self.z_v) # 分度圆弦齿厚
+
+        # test 固定弦齿厚
+
+        # 跨棒距
+        self.dp=1.65*self.mn
+        # test 公式太模糊，
+
+ 
+
+
+
         return 0
 
 def inv(alpha):
@@ -300,5 +320,13 @@ class Gear_Pair(object):
 def write2file(gp,g1,g2):
 # 计算结果按特定格式输出至文件    
 # write all result to a file with certain format
+    f=open("result.txt","w")
+    f.write("齿轮对：",gp.name)
+    f.write("齿轮对参数")
+    f.write("模数，齿数1，齿数2，压力角，螺旋角，变位1，变位2")
+    f.write(gp.mn, gp.z1, gp.z2, gp.alpha_n, gp.beta, gp.xn1, gp.xn2)
+    # 单个齿轮的参数
+    f.write("小齿轮")
+    
     print("test")
     return 0
